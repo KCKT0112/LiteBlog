@@ -3,6 +3,5 @@ server:
 Logger:
   level: "debug"
 database:
-  host: "localhost"
-  user: "root"
-  password: "password"
+  mongodb: "mongodb://127.0.0.1:27017"
+  db: "liteblog"

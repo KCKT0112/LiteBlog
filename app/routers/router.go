@@ -13,6 +13,7 @@ func InitRouter() *gin.Engine {
 
 	// Register routes
 	IndexRoutes(router)
+	UsersRoutes(router)
 
 	return router
 }

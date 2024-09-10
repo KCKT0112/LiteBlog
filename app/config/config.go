@@ -17,9 +17,8 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Host     string
-	User     string
-	Password string
+	MongoDB string
+	DB      string
 }
 
 type LoggerConfig struct {
