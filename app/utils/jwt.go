@@ -16,7 +16,7 @@ type Claims struct {
 func GenerateJWT(id string) (string, error) {
 	jwtKey := []byte(config.AppConfig.Auth.JwtSecret)
 	// Set expiration time
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(time.Duration(config.AppConfig.Auth.JwtExpiration) * time.Hour)
 	claims := &Claims{
 		Id: id,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -40,12 +40,12 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 	jwtKey := []byte(config.AppConfig.Auth.JwtSecret)
 	claims := &Claims{}
 
-	// 解析token
+	// Parse the token
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 
-	// 校验token是否合法
+	// Check if token is valid
 	if err != nil || !token.Valid {
 		return nil, err
 	}
