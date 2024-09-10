@@ -34,15 +34,15 @@ func (u *UserController) Profile(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param   form  body  models.UserRegisterForm  true  "Register form"
-// @Success 200 {object} utils.Response
-// @Failure 400 {object} utils.Response
+// @Success 200 {object} utils.Response{data=map[string]interface{}}
+// @Failure 400 {object} utils.Response{code=int, message=string}
 // @Router /auth/register [post]
 func (u *UserController) Register(c *gin.Context) {
 	var form models.UserRegisterForm
 	// bind form to struct
 	if err := c.ShouldBind(&form); err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
@@ -58,18 +58,18 @@ func (u *UserController) Register(c *gin.Context) {
 	// check if user exists
 	if _u, _ := u.userService.GetUserByEmail(user.Email); _u != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: "user already exists"})
+		c.JSON(http.StatusBadRequest, utils.Error(400, "user already exists"))
 		return
 	}
 
-	result, err := u.userService.CreateUser(user)
+	_, err := u.userService.CreateUser(user)
 	if err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, utils.Response{Code: 200, Message: "success", Data: result})
+	c.JSON(http.StatusOK, utils.Success(nil))
 }
 
 // @Summary Login
@@ -78,15 +78,15 @@ func (u *UserController) Register(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param   form  body  models.UserLoginForm  true  "Login form"
-// @Success 200 {object} utils.Response
-// @Failure 400 {object} utils.Response
+// @Success 200 {object} utils.Response{data=map[string]interface{}}
+// @Failure 400 {object} utils.Response{code=int, message=string}
 // @Router /auth/login [post]
 func (u *UserController) Login(c *gin.Context) {
 	var form models.UserLoginForm
 	// bind form to struct
 	if err := c.ShouldBind(&form); err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 
 	}
@@ -95,20 +95,20 @@ func (u *UserController) Login(c *gin.Context) {
 	user, err := u.userService.GetUserByEmail(form.Email)
 	if err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
 	if user == nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: "user not found"})
+		c.JSON(http.StatusBadRequest, utils.Error(400, "user not found"))
 		return
 	}
 
 	// check if password is correct
 	if user.Password != fmt.Sprintf("%x", sha256.Sum256([]byte(form.Password+config.AppConfig.Auth.PasswordSalt))) {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: "password is incorrect"})
+		c.JSON(http.StatusBadRequest, utils.Error(400, "password is incorrect"))
 		return
 	}
 
@@ -116,14 +116,14 @@ func (u *UserController) Login(c *gin.Context) {
 	access_token, err := utils.GenerateAccessToken(user.ID.String())
 	if err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
 	refresh_token, err := utils.GenerateRefreshToken(user.ID.String())
 	if err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
@@ -138,7 +138,7 @@ func (u *UserController) Login(c *gin.Context) {
 	}
 
 	// return token
-	c.JSON(http.StatusOK, utils.Response{Code: 200, Message: "success", Data: res_data})
+	c.JSON(http.StatusOK, utils.Success(res_data))
 }
 
 // @Summary Refresh Token
@@ -147,15 +147,15 @@ func (u *UserController) Login(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param   form  body  models.UserRefreshTokenForm  true  "Refresh Token form"
-// @Success 200 {object} utils.Response
-// @Failure 400 {object} utils.Response
+// @Success 200 {object} utils.Response{data=map[string]interface{}}
+// @Failure 400 {object} utils.Response{code=int, message=string}
 // @Router /auth/refresh [post]
 func (u *UserController) RefreshToken(c *gin.Context) {
 	var form models.UserRefreshTokenForm
 	// bind form to struct
 	if err := c.ShouldBind(&form); err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
@@ -163,7 +163,7 @@ func (u *UserController) RefreshToken(c *gin.Context) {
 	claims, err := utils.ValidateJWT(form.RefreshToken)
 	if err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
@@ -171,14 +171,14 @@ func (u *UserController) RefreshToken(c *gin.Context) {
 	access_token, err := utils.GenerateAccessToken(claims.Id)
 	if err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
 	refresh_token, err := utils.GenerateRefreshToken(claims.Id)
 	if err != nil {
 		// return error
-		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
@@ -189,5 +189,5 @@ func (u *UserController) RefreshToken(c *gin.Context) {
 	}
 
 	// return token
-	c.JSON(http.StatusOK, utils.Response{Code: 200, Message: "success", Data: res_data})
+	c.JSON(http.StatusOK, utils.Success(res_data))
 }

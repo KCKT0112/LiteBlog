@@ -80,11 +80,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.Response'
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.Response'
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                ' message':
+                  type: string
+                code:
+                  type: integer
+              type: object
       summary: Login
       tags:
       - Auth
@@ -106,11 +119,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.Response'
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.Response'
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                ' message':
+                  type: string
+                code:
+                  type: integer
+              type: object
       summary: Refresh Token
       tags:
       - Auth
@@ -132,11 +158,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.Response'
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.Response'
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                ' message':
+                  type: string
+                code:
+                  type: integer
+              type: object
       summary: Register
       tags:
       - Auth
