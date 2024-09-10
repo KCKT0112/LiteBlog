@@ -27,9 +27,10 @@ type LoggerConfig struct {
 }
 
 type AuthConfig struct {
-	JwtExpiration int
-	JwtSecret     string
-	PasswordSalt  string
+	AccessTokenExpiration   int
+	RefereshTokenExpiration int
+	JwtSecret               string
+	PasswordSalt            string
 }
 
 var AppConfig *Config

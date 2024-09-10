@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthRoutes(router *gin.Engine) {
+func AuthRoutes(router *gin.RouterGroup) {
 	userService := services.NewUserService()
 	userController := controllers.NewUserController(userService)
 
@@ -14,5 +14,6 @@ func AuthRoutes(router *gin.Engine) {
 	{
 		usersGroup.POST("/login", userController.Login)
 		usersGroup.POST("/register", userController.Register)
+		usersGroup.POST("/refresh", userController.RefreshToken)
 	}
 }

@@ -1,6 +1,4 @@
 {
-    "cSpell.words": [
-        "gonic",
-        "KCKT"
-    ]
+    "code-runner.runTerminal": true,
+    "code-runner.fileDirectoryAsCwd": true
 }

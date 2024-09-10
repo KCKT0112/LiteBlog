@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UsersRoutes(router *gin.Engine) {
+func UsersRoutes(router *gin.RouterGroup) {
 	userService := services.NewUserService()
 	userController := controllers.NewUserController(userService)
 

@@ -1,0 +1,143 @@
+definitions:
+  models.UserLoginForm:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 16
+        minLength: 8
+        type: string
+    required:
+    - email
+    type: object
+  models.UserRefreshTokenForm:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  models.UserRegisterForm:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 16
+        minLength: 8
+        type: string
+      username:
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - email
+    - username
+    type: object
+  utils.Response:
+    properties:
+      code:
+        description: status code
+        type: integer
+      data:
+        description: data
+      message:
+        description: message
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /:
+    get:
+      consumes:
+      - text/html
+      description: Index
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Index
+      tags:
+      - Index
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Login form
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLoginForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: Login
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh Token
+      parameters:
+      - description: Refresh Token form
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRefreshTokenForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: Refresh Token
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register
+      parameters:
+      - description: Register form
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRegisterForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: Register
+      tags:
+      - Auth
+swagger: "2.0"

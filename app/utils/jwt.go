@@ -13,10 +13,33 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(id string) (string, error) {
+func GenerateAccessToken(id string) (string, error) {
 	jwtKey := []byte(config.AppConfig.Auth.JwtSecret)
 	// Set expiration time
-	expirationTime := time.Now().Add(time.Duration(config.AppConfig.Auth.JwtExpiration) * time.Hour)
+	expirationTime := time.Now().Add(time.Duration(config.AppConfig.Auth.AccessTokenExpiration) * time.Hour)
+	claims := &Claims{
+		Id: id,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+
+	// Create token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Generate encoded token and send it as response
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}
+
+func GenerateRefreshToken(id string) (string, error) {
+	jwtKey := []byte(config.AppConfig.Auth.JwtSecret)
+	// Set expiration time
+	expirationTime := time.Now().Add(time.Duration(config.AppConfig.Auth.RefereshTokenExpiration) * time.Hour * 24)
 	claims := &Claims{
 		Id: id,
 		RegisteredClaims: jwt.RegisteredClaims{

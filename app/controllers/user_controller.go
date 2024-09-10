@@ -28,6 +28,15 @@ func (u *UserController) Profile(c *gin.Context) {
 	c.Writer.Write([]byte("it works!"))
 }
 
+// @Summary Register
+// @Description Register
+// @Tags    Auth
+// @Accept  json
+// @Produce  json
+// @Param   form  body  models.UserRegisterForm  true  "Register form"
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /auth/register [post]
 func (u *UserController) Register(c *gin.Context) {
 	var form models.UserRegisterForm
 	// bind form to struct
@@ -63,6 +72,15 @@ func (u *UserController) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.Response{Code: 200, Message: "success", Data: result})
 }
 
+// @Summary Login
+// @Description Login
+// @Tags    Auth
+// @Accept  json
+// @Produce  json
+// @Param   form  body  models.UserLoginForm  true  "Login form"
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /auth/login [post]
 func (u *UserController) Login(c *gin.Context) {
 	var form models.UserLoginForm
 	// bind form to struct
@@ -70,6 +88,7 @@ func (u *UserController) Login(c *gin.Context) {
 		// return error
 		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
 		return
+
 	}
 
 	// check if user exists
@@ -94,7 +113,14 @@ func (u *UserController) Login(c *gin.Context) {
 	}
 
 	// generate token
-	token, err := utils.GenerateJWT(user.ID.String())
+	access_token, err := utils.GenerateAccessToken(user.ID.String())
+	if err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
+
+	refresh_token, err := utils.GenerateRefreshToken(user.ID.String())
 	if err != nil {
 		// return error
 		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
@@ -103,11 +129,63 @@ func (u *UserController) Login(c *gin.Context) {
 
 	// generate response data
 	res_data := map[string]interface{}{
-		"token": token,
+		"access_token":  access_token,
+		"refresh_token": refresh_token,
 		"user": map[string]interface{}{
 			"id":   user.ID,
 			"name": user.Name,
 		},
+	}
+
+	// return token
+	c.JSON(http.StatusOK, utils.Response{Code: 200, Message: "success", Data: res_data})
+}
+
+// @Summary Refresh Token
+// @Description Refresh Token
+// @Tags    Auth
+// @Accept  json
+// @Produce  json
+// @Param   form  body  models.UserRefreshTokenForm  true  "Refresh Token form"
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /auth/refresh [post]
+func (u *UserController) RefreshToken(c *gin.Context) {
+	var form models.UserRefreshTokenForm
+	// bind form to struct
+	if err := c.ShouldBind(&form); err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
+
+	// check if token is valid
+	claims, err := utils.ValidateJWT(form.RefreshToken)
+	if err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
+
+	// generate new token
+	access_token, err := utils.GenerateAccessToken(claims.Id)
+	if err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
+
+	refresh_token, err := utils.GenerateRefreshToken(claims.Id)
+	if err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
+
+	// generate response data
+	res_data := map[string]interface{}{
+		"access_token":  access_token,
+		"refresh_token": refresh_token,
 	}
 
 	// return token

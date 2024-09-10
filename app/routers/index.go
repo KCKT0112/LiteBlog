@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func IndexRoutes(router *gin.Engine) {
+func IndexRoutes(router *gin.RouterGroup) {
 	indexService := services.NewIndexService()
 	indexController := controllers.NewIndexController(indexService)
 

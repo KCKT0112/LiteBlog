@@ -21,3 +21,7 @@ type UserLoginForm struct {
 	Email    string `form:"email" binding:"required,email"`
 	Password string `form:"password" binding:"min=8,max=16"`
 }
+
+type UserRefreshTokenForm struct {
+	RefreshToken string `form:"refresh_token" binding:"required"`
+}

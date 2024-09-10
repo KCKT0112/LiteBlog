@@ -6,6 +6,7 @@ database:
   mongodb: "mongodb://127.0.0.1:27017"
   db: "liteblog"
 Auth:
-  jwtexpiration: 24
+  accesstokenexpiration: 24
+  refereshtokenexpiration: 30
   jwtsecret: "123456"
   passwordsalt: "123456"

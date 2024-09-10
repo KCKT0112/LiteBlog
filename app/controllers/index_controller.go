@@ -17,6 +17,15 @@ func NewIndexController(service services.IndexService) *IndexController {
 	}
 }
 
+// GetIndex
+// @Summary Index
+// @Description Index
+// @Tags    Index
+// @Accept  text/html
+// @Produce  text/html
+// @Success 200
+// @Failure 400
+// @Router / [get]
 func (uc *IndexController) GetIndex(c *gin.Context) {
 	c.Writer.WriteHeader(http.StatusOK)
 	c.Writer.Write([]byte("it works!"))
