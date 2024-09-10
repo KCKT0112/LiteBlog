@@ -64,5 +64,52 @@ func (u *UserController) Register(c *gin.Context) {
 }
 
 func (u *UserController) Login(c *gin.Context) {
+	var form models.UserLoginForm
+	// bind form to struct
+	if err := c.ShouldBind(&form); err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
 
+	// check if user exists
+	user, err := u.userService.GetUserByEmail(form.Email)
+	if err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
+
+	if user == nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: "user not found"})
+		return
+	}
+
+	// check if password is correct
+	if user.Password != fmt.Sprintf("%x", sha256.Sum256([]byte(form.Password+config.AppConfig.Auth.PasswordSalt))) {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: "password is incorrect"})
+		return
+	}
+
+	// generate token
+	token, err := utils.GenerateJWT(user.ID.String())
+	if err != nil {
+		// return error
+		c.JSON(http.StatusBadRequest, utils.Response{Code: 400, Message: err.Error()})
+		return
+	}
+
+	// generate response data
+	res_data := map[string]interface{}{
+		"token": token,
+		"user": map[string]interface{}{
+			"id":   user.ID,
+			"name": user.Name,
+		},
+	}
+
+	// return token
+	c.JSON(http.StatusOK, utils.Response{Code: 200, Message: "success", Data: res_data})
 }
