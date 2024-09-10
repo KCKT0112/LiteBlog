@@ -10,6 +10,7 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	Logger   LoggerConfig
+	Auth     AuthConfig
 }
 
 type ServerConfig struct {
@@ -23,6 +24,12 @@ type DatabaseConfig struct {
 
 type LoggerConfig struct {
 	Level string
+}
+
+type AuthConfig struct {
+	JwtExpiration int
+	JwtSecret     string
+	PasswordSalt  string
 }
 
 var AppConfig *Config

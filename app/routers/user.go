@@ -7,11 +7,11 @@ import (
 )
 
 func UsersRoutes(router *gin.Engine) {
-	usersService := services.NewUsersService()
-	usersController := controllers.NewUsersController(usersService)
+	userService := services.NewUserService()
+	userController := controllers.NewUserController(userService)
 
 	usersGroup := router.Group("/user")
 	{
-		usersGroup.GET("/profile", usersController.GetProfile)
+		usersGroup.GET("/profile", userController.Profile)
 	}
 }
