@@ -15,6 +15,7 @@ import (
 type UserService interface {
 	CreateUser(user models.User) (*mongo.InsertOneResult, error)
 	GetUserByEmail(email string) (*models.User, error)
+	GetUserByUID(id string) (*models.User, error)
 }
 
 type userService struct {
@@ -43,6 +44,25 @@ func (u *userService) GetUserByEmail(email string) (*models.User, error) {
 
 	var user models.User
 	filter := bson.D{{Key: "email", Value: email}}
+	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		logger.Error("Error finding user", zap.Error(err))
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetUserByID implements UserService.
+func (u *userService) GetUserByUID(id string) (*models.User, error) {
+	logger := utils.Logger
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.User
+	filter := bson.D{{Key: "uid", Value: id}}
 	err := u.collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {

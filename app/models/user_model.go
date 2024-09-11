@@ -4,6 +4,7 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type User struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	Uid       string             `bson:"uid"`
 	Name      string             `bson:"name"`
 	Email     string             `bson:"email"`
 	Password  string             `bson:"password"`
@@ -24,4 +25,26 @@ type UserLoginForm struct {
 
 type UserRefreshTokenForm struct {
 	RefreshToken string `form:"refresh_token" binding:"required"`
+}
+
+type LoginResponse struct {
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+	User         UserResponse `json:"user"`
+}
+
+type UserResponse struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type RefreshTokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+type ProfileResponse struct {
+	UID   string `json:"uid"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }

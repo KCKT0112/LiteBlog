@@ -23,20 +23,52 @@ func NewUserController(service services.UserService) *UserController {
 	}
 }
 
+// @Summary		Profile
+// @Description	Profile
+// @Tags			User
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	utils.Response{code=int, message=string, data=models.ProfileResponse}
+// @Router			/user/profile [get]
+// @Security		Bearer
 func (u *UserController) Profile(c *gin.Context) {
-	c.Writer.WriteHeader(http.StatusOK)
-	c.Writer.Write([]byte("it works!"))
+	userIDInterface, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found"})
+		return
+	}
+
+	userID := userIDInterface.(string)
+	user, err := u.userService.GetUserByUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.Error(500, err.Error()))
+		return
+	}
+
+	if user == nil {
+		c.JSON(http.StatusNotFound, utils.Error(404, "user not found"))
+		return
+	}
+
+	// user convert to models.UserProfile
+	userProfile := models.ProfileResponse{
+		UID:   user.Uid,
+		Name:  user.Name,
+		Email: user.Email,
+	}
+
+	c.JSON(http.StatusOK, utils.Success(userProfile))
 }
 
-// @Summary Register
-// @Description Register
-// @Tags    Auth
-// @Accept  json
-// @Produce  json
-// @Param   form  body  models.UserRegisterForm  true  "Register form"
-// @Success 200 {object} utils.Response{data=map[string]interface{}}
-// @Failure 400 {object} utils.Response{code=int, message=string}
-// @Router /auth/register [post]
+// @Summary		Register
+// @Description	Register
+// @Tags			Auth
+// @Accept			json
+// @Produce		json
+// @Param			form	body		models.UserRegisterForm	true	"Register form"
+// @Success		200		{object}	utils.Response{code=int, message=string, data=nil}
+// @Failure		400		{object}	utils.Response{code=int, message=string}
+// @Router			/auth/register [post]
 func (u *UserController) Register(c *gin.Context) {
 	var form models.UserRegisterForm
 	// bind form to struct
@@ -48,11 +80,21 @@ func (u *UserController) Register(c *gin.Context) {
 
 	// create user
 	user := models.User{
+		Uid:       utils.GenerateUUID(),
 		Name:      form.Username,
 		Email:     form.Email,
 		Password:  fmt.Sprintf("%x", sha256.Sum256([]byte(form.Password+config.AppConfig.Auth.PasswordSalt))), // Hash password
 		CreatedAt: int64(time.Now().Unix()),                                                                   // time stamp
 		UpdatedAt: int64(time.Now().Unix()),
+	}
+
+	// loop check uuid is unique
+	for {
+		if _u, _ := u.userService.GetUserByUID(user.Uid); _u == nil {
+			break
+		} else {
+			user.Uid = utils.GenerateUUID()
+		}
 	}
 
 	// check if user exists
@@ -72,15 +114,15 @@ func (u *UserController) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.Success(nil))
 }
 
-// @Summary Login
-// @Description Login
-// @Tags    Auth
-// @Accept  json
-// @Produce  json
-// @Param   form  body  models.UserLoginForm  true  "Login form"
-// @Success 200 {object} utils.Response{data=map[string]interface{}}
-// @Failure 400 {object} utils.Response{code=int, message=string}
-// @Router /auth/login [post]
+// @Summary		Login
+// @Description	Login
+// @Tags			Auth
+// @Accept			json
+// @Produce		json
+// @Param			form	body		models.UserLoginForm	true	"Login form"
+// @Success		200		{object}	utils.Response{code=int, message=string, data=models.LoginResponse}
+// @Failure		400		{object}	utils.Response{code=int, message=string}
+// @Router			/auth/login [post]
 func (u *UserController) Login(c *gin.Context) {
 	var form models.UserLoginForm
 	// bind form to struct
@@ -113,14 +155,14 @@ func (u *UserController) Login(c *gin.Context) {
 	}
 
 	// generate token
-	access_token, err := utils.GenerateAccessToken(user.ID.String())
+	access_token, err := utils.GenerateAccessToken(user.Uid)
 	if err != nil {
 		// return error
 		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
-	refresh_token, err := utils.GenerateRefreshToken(user.ID.String())
+	refresh_token, err := utils.GenerateRefreshToken(user.Uid)
 	if err != nil {
 		// return error
 		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
@@ -141,15 +183,15 @@ func (u *UserController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.Success(res_data))
 }
 
-// @Summary Refresh Token
-// @Description Refresh Token
-// @Tags    Auth
-// @Accept  json
-// @Produce  json
-// @Param   form  body  models.UserRefreshTokenForm  true  "Refresh Token form"
-// @Success 200 {object} utils.Response{data=map[string]interface{}}
-// @Failure 400 {object} utils.Response{code=int, message=string}
-// @Router /auth/refresh [post]
+// @Summary		Refresh Token
+// @Description	Refresh Token
+// @Tags			Auth
+// @Accept			json
+// @Produce		json
+// @Param			form	body		models.UserRefreshTokenForm	true	"Refresh Token form"
+// @Success		200		{object}	utils.Response{code=int, message=string, data=models.RefreshTokenResponse}
+// @Failure		400		{object}	utils.Response{code=int, message=string}
+// @Router			/auth/refresh [post]
 func (u *UserController) RefreshToken(c *gin.Context) {
 	var form models.UserRefreshTokenForm
 	// bind form to struct
@@ -168,14 +210,14 @@ func (u *UserController) RefreshToken(c *gin.Context) {
 	}
 
 	// generate new token
-	access_token, err := utils.GenerateAccessToken(claims.Id)
+	access_token, err := utils.GenerateAccessToken(claims.ID)
 	if err != nil {
 		// return error
 		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))
 		return
 	}
 
-	refresh_token, err := utils.GenerateRefreshToken(claims.Id)
+	refresh_token, err := utils.GenerateRefreshToken(claims.ID)
 	if err != nil {
 		// return error
 		c.JSON(http.StatusBadRequest, utils.Error(400, err.Error()))

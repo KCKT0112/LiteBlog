@@ -75,4 +75,6 @@ func InitializeLogger() {
 
 	// Create the logger
 	Logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+
+	zap.RedirectStdLog(Logger)
 }

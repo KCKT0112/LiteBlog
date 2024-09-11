@@ -9,7 +9,6 @@ import (
 
 // Custom Claims
 type Claims struct {
-	Id string `json:"id"`
 	jwt.RegisteredClaims
 }
 
@@ -18,8 +17,8 @@ func GenerateAccessToken(id string) (string, error) {
 	// Set expiration time
 	expirationTime := time.Now().Add(time.Duration(config.AppConfig.Auth.AccessTokenExpiration) * time.Hour)
 	claims := &Claims{
-		Id: id,
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        id,
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 	}
@@ -41,8 +40,8 @@ func GenerateRefreshToken(id string) (string, error) {
 	// Set expiration time
 	expirationTime := time.Now().Add(time.Duration(config.AppConfig.Auth.RefereshTokenExpiration) * time.Hour * 24)
 	claims := &Claims{
-		Id: id,
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        id,
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 	}

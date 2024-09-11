@@ -1,4 +1,30 @@
+basePath: /api
 definitions:
+  models.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/models.UserResponse'
+    type: object
+  models.ProfileResponse:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      uid:
+        type: string
+    type: object
+  models.RefreshTokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   models.UserLoginForm:
     properties:
       email:
@@ -33,6 +59,13 @@ definitions:
     - email
     - username
     type: object
+  models.UserResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   utils.Response:
     properties:
       code:
@@ -44,8 +77,12 @@ definitions:
         description: message
         type: string
     type: object
+host: localhost:8083
 info:
   contact: {}
+  description: This is a sample server for a Swagger API with Gin.
+  title: Gin Swagger Example API
+  version: "1.0"
 paths:
   /:
     get:
@@ -83,9 +120,12 @@ paths:
             allOf:
             - $ref: '#/definitions/utils.Response'
             - properties:
-                data:
-                  additionalProperties: true
-                  type: object
+                ' data':
+                  $ref: '#/definitions/models.LoginResponse'
+                ' message':
+                  type: string
+                code:
+                  type: integer
               type: object
         "400":
           description: Bad Request
@@ -122,9 +162,12 @@ paths:
             allOf:
             - $ref: '#/definitions/utils.Response'
             - properties:
-                data:
-                  additionalProperties: true
-                  type: object
+                ' data':
+                  $ref: '#/definitions/models.RefreshTokenResponse'
+                ' message':
+                  type: string
+                code:
+                  type: integer
               type: object
         "400":
           description: Bad Request
@@ -161,9 +204,12 @@ paths:
             allOf:
             - $ref: '#/definitions/utils.Response'
             - properties:
-                data:
-                  additionalProperties: true
+                ' data':
                   type: object
+                ' message':
+                  type: string
+                code:
+                  type: integer
               type: object
         "400":
           description: Bad Request
@@ -179,4 +225,36 @@ paths:
       summary: Register
       tags:
       - Auth
+  /user/profile:
+    get:
+      consumes:
+      - application/json
+      description: Profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                ' data':
+                  $ref: '#/definitions/models.ProfileResponse'
+                ' message':
+                  type: string
+                code:
+                  type: integer
+              type: object
+      security:
+      - Bearer: []
+      summary: Profile
+      tags:
+      - User
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
