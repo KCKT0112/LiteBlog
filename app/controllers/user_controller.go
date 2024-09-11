@@ -52,7 +52,7 @@ func (u *UserController) Profile(c *gin.Context) {
 
 	// user convert to models.UserProfile
 	userProfile := models.ProfileResponse{
-		UID:   user.Uid,
+		Uid:   user.Uid,
 		Name:  user.Name,
 		Email: user.Email,
 	}
@@ -174,7 +174,7 @@ func (u *UserController) Login(c *gin.Context) {
 		"access_token":  access_token,
 		"refresh_token": refresh_token,
 		"user": map[string]interface{}{
-			"id":   user.ID,
+			"uid":  user.Uid,
 			"name": user.Name,
 		},
 	}

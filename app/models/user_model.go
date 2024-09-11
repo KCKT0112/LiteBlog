@@ -34,7 +34,7 @@ type LoginResponse struct {
 }
 
 type UserResponse struct {
-	ID   string `json:"id"`
+	Uid  string `json:"uid"`
 	Name string `json:"name"`
 }
 
@@ -44,7 +44,7 @@ type RefreshTokenResponse struct {
 }
 
 type ProfileResponse struct {
-	UID   string `json:"uid"`
+	Uid   string `json:"uid"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }

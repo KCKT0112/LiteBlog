@@ -396,10 +396,10 @@ const docTemplate = `{
         "models.UserResponse": {
             "type": "object",
             "properties": {
-                "id": {
+                "name": {
                     "type": "string"
                 },
-                "name": {
+                "uid": {
                     "type": "string"
                 }
             }
