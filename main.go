@@ -14,12 +14,11 @@ import (
 //	@version		1.0
 //	@description	This is a sample server for a Swagger API with Gin.
 
-//	@host						localhost:8083
-//	@BasePath					/api
-//	@securityDefinitions.apikey	Bearer
-//	@in							header
-//	@name						Authorization
-//	@description				Type "Bearer" followed by a space and JWT token.
+// @BasePath					/api
+// @securityDefinitions.apikey	Bearer
+// @in							header
+// @name						Authorization
+// @description				Type "Bearer" followed by a space and JWT token.
 func main() {
 	config.InitConfig()
 

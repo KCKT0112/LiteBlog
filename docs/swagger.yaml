@@ -77,7 +77,6 @@ definitions:
         description: message
         type: string
     type: object
-host: localhost:8083
 info:
   contact: {}
   description: This is a sample server for a Swagger API with Gin.
