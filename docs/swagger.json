@@ -321,6 +321,12 @@
                 "name": {
                     "type": "string"
                 },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "uid": {
                     "type": "string"
                 }
@@ -391,6 +397,12 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "uid": {
                     "type": "string"

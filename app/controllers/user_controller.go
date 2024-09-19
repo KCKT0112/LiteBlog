@@ -55,6 +55,7 @@ func (u *UserController) Profile(c *gin.Context) {
 		Uid:   user.Uid,
 		Name:  user.Name,
 		Email: user.Email,
+		Rules: user.Rules,
 	}
 
 	c.JSON(http.StatusOK, utils.Success(userProfile))
@@ -84,7 +85,8 @@ func (u *UserController) Register(c *gin.Context) {
 		Name:      form.Username,
 		Email:     form.Email,
 		Password:  fmt.Sprintf("%x", sha256.Sum256([]byte(form.Password+config.AppConfig.Auth.PasswordSalt))), // Hash password
-		CreatedAt: int64(time.Now().Unix()),                                                                   // time stamp
+		Rules:     []string{"user"},
+		CreatedAt: int64(time.Now().Unix()), // time stamp
 		UpdatedAt: int64(time.Now().Unix()),
 	}
 
@@ -174,8 +176,9 @@ func (u *UserController) Login(c *gin.Context) {
 		"access_token":  access_token,
 		"refresh_token": refresh_token,
 		"user": map[string]interface{}{
-			"uid":  user.Uid,
-			"name": user.Name,
+			"uid":   user.Uid,
+			"name":  user.Name,
+			"rules": user.Rules,
 		},
 	}
 

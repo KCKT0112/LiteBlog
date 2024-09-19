@@ -328,6 +328,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "uid": {
                     "type": "string"
                 }
@@ -398,6 +404,12 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "uid": {
                     "type": "string"

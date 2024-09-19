@@ -8,7 +8,7 @@ type User struct {
 	Name      string             `bson:"name"`
 	Email     string             `bson:"email"`
 	Password  string             `bson:"password"`
-	Rules     string             `bson:"rules"`
+	Rules     []string           `bson:"rules"`
 	CreatedAt int64              `bson:"created_at"`
 	UpdatedAt int64              `bson:"updated_at"`
 }
@@ -35,8 +35,9 @@ type LoginResponse struct {
 }
 
 type UserResponse struct {
-	Uid  string `json:"uid"`
-	Name string `json:"name"`
+	Uid   string   `json:"uid"`
+	Name  string   `json:"name"`
+	Rules []string `bson:"rules"`
 }
 
 type RefreshTokenResponse struct {
@@ -45,7 +46,8 @@ type RefreshTokenResponse struct {
 }
 
 type ProfileResponse struct {
-	Uid   string `json:"uid"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Uid   string   `json:"uid"`
+	Name  string   `json:"name"`
+	Email string   `json:"email"`
+	Rules []string `bson:"rules"`
 }
