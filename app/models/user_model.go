@@ -8,6 +8,7 @@ type User struct {
 	Name      string             `bson:"name"`
 	Email     string             `bson:"email"`
 	Password  string             `bson:"password"`
+	Rules     string             `bson:"rules"`
 	CreatedAt int64              `bson:"created_at"`
 	UpdatedAt int64              `bson:"updated_at"`
 }

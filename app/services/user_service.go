@@ -24,13 +24,12 @@ type userService struct {
 
 // CreateUser implements UserService.
 func (u *userService) CreateUser(user models.User) (*mongo.InsertOneResult, error) {
-	logger := utils.Logger
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	result, err := u.collection.InsertOne(ctx, user)
 	if err != nil {
-		logger.Error("Error inserting user", zap.Error(err))
+		utils.Logger.Error("Error inserting user", zap.Error(err))
 		return nil, err
 	}
 	return result, nil
@@ -38,7 +37,6 @@ func (u *userService) CreateUser(user models.User) (*mongo.InsertOneResult, erro
 
 // GetUserByEmail implements UserService.
 func (u *userService) GetUserByEmail(email string) (*models.User, error) {
-	logger := utils.Logger
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -49,7 +47,7 @@ func (u *userService) GetUserByEmail(email string) (*models.User, error) {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}
-		logger.Error("Error finding user", zap.Error(err))
+		utils.Logger.Error("Error finding user", zap.Error(err))
 		return nil, err
 	}
 	return &user, nil
@@ -57,7 +55,6 @@ func (u *userService) GetUserByEmail(email string) (*models.User, error) {
 
 // GetUserByID implements UserService.
 func (u *userService) GetUserByUID(id string) (*models.User, error) {
-	logger := utils.Logger
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -68,7 +65,7 @@ func (u *userService) GetUserByUID(id string) (*models.User, error) {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}
-		logger.Error("Error finding user", zap.Error(err))
+		utils.Logger.Error("Error finding user", zap.Error(err))
 		return nil, err
 	}
 	return &user, nil

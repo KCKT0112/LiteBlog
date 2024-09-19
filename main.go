@@ -29,10 +29,11 @@ func main() {
 
 	// Initialize the logger with the configuration
 	utils.InitializeLogger()
+	logger := utils.Logger
+
 	// Connect to the MongoDB database
 	db.ConnectMongoDB()
 
-	logger := utils.Logger
 	logger.Info("Starting server", zap.String("port", fmt.Sprintf("%d", port)))
 
 	router := routes.InitRouter()
