@@ -4,7 +4,7 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Permissions struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	PermissionID string             `bson:"permission"`
+	PermissionID string             `bson:"permission_id"`
 	Description  string             `bson:"description"`
 	Path         string             `bson:"path"`
 	Methods      string             `bson:"methods"`
